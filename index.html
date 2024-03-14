@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Knockout.dragdrop Demo</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="./assets/styles.css" type="text/css" media="screen" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
+  </head>
+  <body>
+    <div class="documents">
+      <ul class="collapse" data-bind="foreach: collapseItems">
+        <li class="collapse__item draggable" draggable="false" data-bind="
+          attr: { 'data-title': title },
+          css: { 'collapse__item--dragover': $root.dragTargetIndex() === $index() },
+          event:{
+            dragstart: (_, event) => $root.handleDragStart(event, $index()),
+            dragend: (_, event) => $root.handleDragEnd(event),
+            dragover: (_, event) => $root.preventDefaultEvent(event),
+            dragenter: (_, event) => $root.hadleDragEnter(event, $index()),
+            dragleave: (_, event) => $root.preventDefaultEvent(event),
+            drop: (_, event) => $root.handleDrop(event),
+          }
+        ">
+          <div class="collapse__content" data-bind="css: { 'collapse__content--bordered': isCollapsed() }">
+            <div class="collapse__inner">
+              <button class="collapse__button" data-bind="click: toggleCollapse">
+                <img src="./assets/icons/chevron.svg" alt="Chevron" class="collapse__icon" data-bind="css: { 'collapse__icon--rotate': isCollapsed() }">
+              </button>
+
+              <p class="collapse__name" data-bind="text: title"></p>
+            </div>
+
+            <img draggable="true" src="./assets/icons/handler.svg" alt="Handler" class="collapse__icon collapse__icon--grabbing">
+          </div>
+
+          <ul class="collapse__childrens" data-bind="css: { 'collapse__childrens--expanded': isCollapsed() }">
+            <!-- ko foreach: childrens -->
+            <li class="collapse__item draggable" draggable="false" data-bind="
+              css: { 'collapse__item--dragover': $root.dragTargetChildIndex().childIndex === $index() },
+              event: {
+                dragstart: (_, event) => $root.handleDragStartChild(event, $parent, $index()),
+                dragend: (_, event) => $root.handleDragEndChild(event, $parent, $index()),
+                dragover: (_, event) => $root.preventDefaultEvent(event),
+                dragenter: (_, event) => $root.hadleDragEnterChild(event, $parent, $index()),
+                dragleave: (_, event) => $root.preventDefaultEvent(event),
+                drop: (_, event) => $root.handleDropChild(event, $parent, $index()),
+              }
+            ">
+              <div class="collapse__content collapse__content--children" data-bind="css: { 'collapse__content--first-child': $index() === 0 }">
+                <p class="collapse__label" data-bind="text: $data"></p>
+
+                <img src="./assets/icons/handler.svg" alt="Handler" class="collapse__icon collapse__icon--child collapse__icon--grabbing" draggable="true">
+              </div>
+            </li>
+            <!-- /ko -->
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>
